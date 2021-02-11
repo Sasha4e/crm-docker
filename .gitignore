@@ -1,0 +1,6 @@
+.env
+/db_dumps/*
+/web/logs/*
+/web/core/*.conf
+/web/www/crm/*
+/php/supervisor.conf

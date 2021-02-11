@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+
+  web:
+    image: nginx
+    restart: unless-stopped
+    volumes:
+      - ./web/core:/etc/nginx/conf.d
+      - ./web/logs:/var/log/nginx/
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    ports:
+      - "81:81"
+    working_dir: ${APP_PATH_CONTAINER}
+    environment:
+        DOMAIN: ${DOMAIN}
+        PORT: ${PORT}
+    command: ${APP_PATH_CONTAINER}/docker-nginx-entrypoint.sh
+    depends_on:
+      - mysql
+      - php
+
+  php:
+    build:
+        context: ./php
+        args:
+            user: ${DEPLOY_USER}
+    container_name: php-fpm
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    working_dir: ${APP_PATH_CONTAINER}
+    ports:
+      - "9000"
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    volumes:
+      - ${DB_MYSQL_PATH_HOST}:/var/lib/mysql
+      #- ./mysql:/etc/mysql/conf.d
+    ports:
+      - "33060:3306"
+    environment:
+      MYSQL_USER: ${DB_MYSQL_USER}
+      MYSQL_PASSWORD: ${DB_MYSQL_PASSWORD}
+      MYSQL_ROOT_USER: ${DB_MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_MYSQL_ROOT_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'

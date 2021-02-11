@@ -1,0 +1,3 @@
+[submodule "crm"]
+	path = /web/www/crm
+	url = git@bitbucket.org:web-develop/crm.git
